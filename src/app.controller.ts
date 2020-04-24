@@ -7,26 +7,24 @@ import { AuthService } from './auth/auth.service';
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    private readonly authService: AuthService
-  ) { }
+    private readonly authService: AuthService,
+  ) {}
 
   @Get('hello')
   getHello(): string {
     return this.appService.getHello();
   }
+
   @Get('ping')
   ping(): string {
-    return 'pong';
-  }
-
-  @Get('pong')
-  pong(): string {
-    return 'ping';
+    console.log('ping');
+    return '{"pong":"pong"}';
   }
 
   @UseGuards(AuthGuard('local'))
   @Post('auth/login')
   async login(@Request() req) {
+    console.log('AUTH/LOGIN', req.user);
     return this.authService.login(req.user);
   }
 
@@ -35,5 +33,4 @@ export class AppController {
   getProfile(@Request() req) {
     return req.user;
   }
-
 }
