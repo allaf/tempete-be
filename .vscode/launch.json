@@ -4,15 +4,32 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
+    // {
+    //   "type": "node",
+    //   "request": "launch",
+    //   "name": "nodemon",
+    //   "program": "${workspaceFolder}/src/main.ts",
+    //   // "program": "${workspaceFolder}/dist/main.js",
+    //   "runtimeExecutable": "${workspaceFolder}/node_modules/nodemon/bin/nodemon.js",
+    //   "restart": true,
+    //   "console": "integratedTerminal",
+    //   "internalConsoleOptions": "neverOpen",
+    //   "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+    //   "skipFiles": [
+    //     "${workspaceFolder}/node_modules/**/*.js",
+    //     "<node_internals>/**/*.js"
+    //   ]
+    // },
     {
-      "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "type": "node",
+      "name": "tempete-be",
       "program": "${workspaceFolder}/src/main.ts",
-      "preLaunchTask": "tsc: watch - tsconfig.build.json",
-      "outFiles": [
-        "${workspaceFolder}/dist/**/*.js"
-      ],
+      "preLaunchTask": "npm build",
+      // "preLaunchTask": "tsc: watch - tsconfig.build.json",
+      "restart": true,
+      
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
       "skipFiles": [
         "${workspaceFolder}/node_modules/**/*.js",
         "<node_internals>/**/*.js"

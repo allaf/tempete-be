@@ -1,7 +1,10 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { Observable, of } from 'rxjs';
+import { ExtractJwt } from 'passport-jwt';
 
 @Controller('game')
+@UseGuards(AuthGuard('jwt'))
 export class GameController {
   games = [
     { name: 'partie alex', id: '45' },
@@ -9,8 +12,7 @@ export class GameController {
   ];
 
   @Get('list')
-  getUsers(): Observable<any[]> {
+  getUsers(@Request() req): Observable<any[]> {
     return of(this.games);
   }
 }
-

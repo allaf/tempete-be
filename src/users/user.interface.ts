@@ -1,6 +1,6 @@
 interface User {
-  userId: number;
+  id: string;
   username: string;
   password?: string;
-  access_token?: string;
+  accessToken?: string;
 }
