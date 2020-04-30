@@ -1,22 +1,8 @@
-import {
-  BadRequestException,
-  Controller,
-  Get,
-  HttpStatus,
-  InternalServerErrorException,
-  Post,
-  Query,
-  Req,
-  Request,
-  UnauthorizedException,
-  UseGuards,
-  Body,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ExtractJwt } from 'passport-jwt';
+import { LoginGuard } from 'auth/guard/login.guard';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
-import { JwtModule, JwtService } from '@nestjs/jwt';
 
 interface RefreshToken {
   refreshToken: string;
@@ -34,29 +20,34 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  affiche(x, y) {
+    console.log('AFFICHE ', x, y);
+  }
+
   @Get('ping')
-  ping(): string {
+  ping(@Request() req): string {
     return '{"ping":"pong"}';
   }
 
   // TODO mattre les auth dans un controller auth
-  @UseGuards(AuthGuard('local'))
+  // @UseGuards(AuthGuard('local'))
+  @UseGuards(LoginGuard)
   @Post('auth/login')
   async login(@Request() req) {
-    return this.authService.login(req.user);
+    let res = this.authService.login(req.user);
+    console.log(req.sessionStore.sessions);
+    return res;
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Post('auth/logout')
-  async logout(@Body() body) {
+  async logout(@Body() body, @Request() req) {
+    req.logout();
     return this.authService.logout(body.refreshToken);
   }
 
   @Post('/auth/refreshToken')
-  async refreshToken(
-    @Body() refreshToken: RefreshToken,
-  ): Promise<any> {
-    //FIXME old token ne devrait plus marcher !
+  async refreshToken(@Body() refreshToken: RefreshToken): Promise<any> {
     console.log('ENDPOINT REFRESH TOKEN.');
     return this.authService.refreshToken(refreshToken.refreshToken);
   }

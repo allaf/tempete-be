@@ -2,15 +2,24 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomBytes } from 'crypto';
 import { UsersService } from '../users/users.service';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class AuthService {
+  findAllConnected(): Observable<User[]> {
+    return 
+  }
   refreshTokens = new Map<string, User>();
 
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
+
+  LoggedInUsers() {
+    return;
+    // TODO logged in users list
+  }
 
   async validateUser(username: string, pass: string): Promise<User> {
     const user = await this.usersService.findOne(username);

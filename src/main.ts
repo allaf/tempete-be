@@ -1,27 +1,33 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { Observable, of, interval } from 'rxjs';
-// import { interval } from 'rxjs';
+import * as session from 'express-session';
+import * as passport from 'passport';
+import { interval } from 'rxjs';
 import { take, tap } from 'rxjs/operators';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
+
+  app.use(
+    session({
+      secret: 'nest cats',
+      resave: false,
+      saveUninitialized: false,
+    }),
+  );
+  app.use(passport.initialize());
+  app.use(passport.session());
+
   await app.listen(3000);
   sandbox();
 }
 bootstrap();
 
 async function sandbox() {
-  await console.log('**** sandbox ****');
-
-  // const obs$ = interval(1000).pipe(take(4));
-
+  console.log('**** sandbox ****');
   await f();
-  await console.log('**** sandbox ****');
-
-  // await new Promise(resolve => setTimeout(resolve, 5000));
-  // console.log('Done!');
+  console.log('**** sandbox ****');
 }
 
 async function f() {
