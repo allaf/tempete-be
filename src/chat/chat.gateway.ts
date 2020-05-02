@@ -39,11 +39,4 @@ export class ChatGateway implements OnGatewayInit {
   toto(@MessageBody() data: any) {
     console.log("Serveur a reçu 'events' en socketio : ", data);
   }
-
-  //ws
-  // @SubscribeMessage('events')
-  // onEvent(client: any, data: any) {
-  //{"event":"events","data":"alex"}
-  // console.log("Serveur a reçu 'events' en WS la data : ", data);
-  // }
 }
