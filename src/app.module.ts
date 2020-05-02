@@ -6,9 +6,10 @@ import { UsersController } from './users/users.controller';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { GameController } from 'game/game.controller';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
-  imports: [AuthModule, UsersModule],
+  imports: [AuthModule, UsersModule, ChatModule],
   controllers: [AppController, UsersController, GameController],
   providers: [AppService, UsersService],
 })

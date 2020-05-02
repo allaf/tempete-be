@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { LoginGuard } from 'auth/guard/login.guard';
+// import { LoginGuard } from 'auth/guard/login.guard';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
+// import { AuthenticatedGuard } from 'auth/guard/auth.guard';
 
 interface RefreshToken {
   refreshToken: string;
@@ -10,28 +11,30 @@ interface RefreshToken {
 
 @Controller()
 export class AppController {
+  private readonly logger = new Logger(AppController.name);
+
   constructor(
     private readonly appService: AppService,
     private readonly authService: AuthService,
-  ) {}
+  ) {
+    this.logger.log('LOG !!!!!!!!');
+    this.logger.warn('WARN !!!!!!!!');
+    this.logger.debug('DEBUG !!!!!!!!');
+    this.logger.error('ERROR :::');
+  }
 
   @Get('hello')
   getHello(): string {
     return this.appService.getHello();
   }
 
-  affiche(x, y) {
-    console.log('AFFICHE ', x, y);
-  }
-
   @Get('ping')
   ping(@Request() req): string {
+    console.log('ping');
     return '{"ping":"pong"}';
   }
 
-  // TODO mattre les auth dans un controller auth
-  // @UseGuards(AuthGuard('local'))
-  @UseGuards(LoginGuard)
+  @UseGuards(AuthGuard('local'))
   @Post('auth/login')
   async login(@Request() req) {
     let res = this.authService.login(req.user);
@@ -42,7 +45,6 @@ export class AppController {
   @UseGuards(AuthGuard('jwt'))
   @Post('auth/logout')
   async logout(@Body() body, @Request() req) {
-    req.logout();
     return this.authService.logout(body.refreshToken);
   }
 
@@ -56,11 +58,5 @@ export class AppController {
   @Get('protected')
   getProtected(@Request() req) {
     return 'should be protected';
-  }
-
-  @UseGuards(AuthGuard('jwt'))
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
   }
 }

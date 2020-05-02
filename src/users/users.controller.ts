@@ -1,10 +1,17 @@
-import { Controller, Get, Param, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Request,
+  UseGuards,
+  Logger,
+} from '@nestjs/common';
 import { AuthService } from 'auth/auth.service';
 import { UsersService } from './users.service';
 import { Observable, of } from 'rxjs';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
-// @UseGuards(AuthGuard('jwt')) //TODO ssss
 //TODO fix tslint
 export class UsersController {
   constructor(
@@ -13,17 +20,14 @@ export class UsersController {
   ) {}
 
   @Get()
+  @UseGuards(AuthGuard('jwt'))
   async getUsers(): Promise<User[]> {
     return await this.service.findAll();
   }
 
   @Get('connected')
-  getConnectedUsers(@Request() req): Observable<User[]> {
-    return of(
-      Object.values(req.sessionStore.sessions).map(
-        x => JSON.parse(x + '')['passport']['user'],
-      ),
-    );
+  getConnectedUsers(@Request() req){
+    return this.auth.loggedInUsers()
   }
 
   @Get(':id')
