@@ -1,16 +1,39 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotImplementedException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomBytes } from 'crypto';
+import { Observable } from 'rxjs';
 import { UsersService } from '../users/users.service';
+
+class UserRefreshToken {
+  user: User;
+  refreshToken: string;
+
+  constructor(user: User, token: string) {
+    this.refreshToken = token;
+    this.user = user;
+  }
+}
 
 @Injectable()
 export class AuthService {
-  refreshTokens = new Map<string, User>();
+  findAllConnected(): Observable<User[]> {
+    return;
+  }
+  // refreshTokens = new Map<string, User>();
+  refreshTokens: UserRefreshToken[] = [];
 
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
+
+  loggedInUsers(): User[] {
+    return this.refreshTokens.map((x: UserRefreshToken) => x.user);
+  }
 
   async validateUser(username: string, pass: string): Promise<User> {
     const user = await this.usersService.findOne(username);
@@ -25,6 +48,7 @@ export class AuthService {
   }
 
   async login(user: User) {
+    //TODO enlever les anciens token du même user
     const token = this.jwtService.sign(user);
     const refreshToken = randomBytes(64).toString('hex');
     const resp = {
@@ -32,24 +56,40 @@ export class AuthService {
       ...{ accessToken: token, refreshToken },
     };
 
-    this.refreshTokens.set(refreshToken, user);
+    this.refreshTokens = this.refreshTokens.filter(x => x.user.id !== user.id);
+    this.refreshTokens.push(new UserRefreshToken(user, refreshToken));
 
     return resp;
   }
 
-  logout(refreshToken: string) {
-    console.log(this.refreshTokens);
-    if (this.refreshTokens.has(refreshToken)) {
-      this.refreshTokens.delete(refreshToken);
+  logout(refreshToken: string, userId?: string) {
+    if (this.hasRT(refreshToken)) {
+      this.removeRT(refreshToken);
     } else {
       console.log('pas trouvé son refreshToken');
     }
   }
 
+  private hasRT(refreshToken: string) {
+    return this.refreshTokens.find(
+      (x: UserRefreshToken) => x.refreshToken === refreshToken,
+    );
+  }
+
+  private removeRT(refreshToken: string) {
+    let x = this.refreshTokens.filter(
+      (x: UserRefreshToken) => x.refreshToken !== refreshToken,
+    );
+    this.refreshTokens = x;
+  }
+
   refreshToken(refreshToken: string) {
-    if (this.refreshTokens.has(refreshToken)) {
-      const user: User = this.refreshTokens.get(refreshToken);
-      return { jwtToken: this.jwtService.sign(user) };
+    if (this.hasRT(refreshToken)) {
+      const x = this.refreshTokens.find(
+        (x: UserRefreshToken) => x.refreshToken === refreshToken,
+      );
+      this.removeRT(refreshToken);
+      return { jwtToken: this.jwtService.sign(x.user) };
     } else {
       console.log('401 car refreshToken non trouvé sur le serveur');
       throw new UnauthorizedException();

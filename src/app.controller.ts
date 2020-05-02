@@ -1,22 +1,9 @@
-import {
-  BadRequestException,
-  Controller,
-  Get,
-  HttpStatus,
-  InternalServerErrorException,
-  Post,
-  Query,
-  Req,
-  Request,
-  UnauthorizedException,
-  UseGuards,
-  Body,
-} from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ExtractJwt } from 'passport-jwt';
+// import { LoginGuard } from 'auth/guard/login.guard';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+// import { AuthenticatedGuard } from 'auth/guard/auth.guard';
 
 interface RefreshToken {
   refreshToken: string;
@@ -24,10 +11,17 @@ interface RefreshToken {
 
 @Controller()
 export class AppController {
+  private readonly logger = new Logger(AppController.name);
+
   constructor(
     private readonly appService: AppService,
     private readonly authService: AuthService,
-  ) {}
+  ) {
+    this.logger.log('LOG !!!!!!!!');
+    this.logger.warn('WARN !!!!!!!!');
+    this.logger.debug('DEBUG !!!!!!!!');
+    this.logger.error('ERROR :::');
+  }
 
   @Get('hello')
   getHello(): string {
@@ -35,28 +29,27 @@ export class AppController {
   }
 
   @Get('ping')
-  ping(): string {
+  ping(@Request() req): string {
+    console.log('ping');
     return '{"ping":"pong"}';
   }
 
-  // TODO mattre les auth dans un controller auth
   @UseGuards(AuthGuard('local'))
   @Post('auth/login')
   async login(@Request() req) {
-    return this.authService.login(req.user);
+    let res = this.authService.login(req.user);
+    console.log(req.sessionStore.sessions);
+    return res;
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Post('auth/logout')
-  async logout(@Body() body) {
+  async logout(@Body() body, @Request() req) {
     return this.authService.logout(body.refreshToken);
   }
 
   @Post('/auth/refreshToken')
-  async refreshToken(
-    @Body() refreshToken: RefreshToken,
-  ): Promise<any> {
-    //FIXME old token ne devrait plus marcher !
+  async refreshToken(@Body() refreshToken: RefreshToken): Promise<any> {
     console.log('ENDPOINT REFRESH TOKEN.');
     return this.authService.refreshToken(refreshToken.refreshToken);
   }
@@ -65,11 +58,5 @@ export class AppController {
   @Get('protected')
   getProtected(@Request() req) {
     return 'should be protected';
-  }
-
-  @UseGuards(AuthGuard('jwt'))
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
   }
 }
