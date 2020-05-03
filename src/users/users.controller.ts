@@ -12,7 +12,6 @@ import { Observable, of } from 'rxjs';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
-//TODO fix tslint
 export class UsersController {
   constructor(
     private readonly service: UsersService,
@@ -26,8 +25,8 @@ export class UsersController {
   }
 
   @Get('connected')
-  getConnectedUsers(@Request() req){
-    return this.auth.loggedInUsers()
+  getConnectedUsers(@Request() req) {
+    return this.auth.loggedInUsers();
   }
 
   @Get(':id')
