@@ -50,7 +50,7 @@ export class AppController {
 
   @Post('/auth/refreshToken')
   async refreshToken(@Body() refreshToken: RefreshToken): Promise<any> {
-    console.log('ENDPOINT REFRESH TOKEN.');
+    this.logger.log('endpoint refreshToken',refreshToken.refreshToken)
     return this.authService.refreshToken(refreshToken.refreshToken);
   }
 

@@ -84,12 +84,13 @@ export class AuthService {
   }
 
   refreshToken(refreshToken: string) {
+    console.log('tokens:', this.refreshTokens);
     if (this.hasRT(refreshToken)) {
-      const x = this.refreshTokens.find(
+      console.log('refreshToken trouvé, clenauing up')
+      const userRefreshToken = this.refreshTokens.find(
         (x: UserRefreshToken) => x.refreshToken === refreshToken,
       );
-      this.removeRT(refreshToken);
-      return { jwtToken: this.jwtService.sign(x.user) };
+      return { jwtToken: this.jwtService.sign(userRefreshToken.user) };
     } else {
       console.log('401 car refreshToken non trouvé sur le serveur');
       throw new UnauthorizedException();
