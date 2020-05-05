@@ -1,18 +1,35 @@
-import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Request,
+  UseGuards,
+  Post,
+  Body,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Observable, of } from 'rxjs';
-import { ExtractJwt } from 'passport-jwt';
+import { db } from 'data';
+import { delay } from 'rxjs/operators';
 
 @Controller('game')
 @UseGuards(AuthGuard('jwt'))
 export class GameController {
-  games = [
-    { name: 'partie alex', id: '45' },
-    { name: 'partie toto', id: '15' },
-  ];
+  boardStat = '';
 
   @Get('list')
   getUsers(@Request() req): Observable<any[]> {
-    return of(this.games);
+    return of(db.games);
+  }
+
+  @Post()
+  create(@Body() body, @Request() req) {
+    let game: Game = {
+      id: '' + db.gameId++,
+      name: 'partie de ' + req.user.username + ' (' + db.gameId + ')',
+      boardFen: 'start',
+      createdBy: req.user.id,
+    };
+    db.games.push(game);
+    return game;
   }
 }

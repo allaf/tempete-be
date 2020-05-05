@@ -1,15 +1,7 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Request,
-  UseGuards,
-  Logger,
-} from '@nestjs/common';
+import { Controller, Get, Param, Request, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'auth/auth.service';
 import { UsersService } from './users.service';
-import { Observable, of } from 'rxjs';
-import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {

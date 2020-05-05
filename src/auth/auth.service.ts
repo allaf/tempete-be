@@ -1,11 +1,6 @@
-import {
-  Injectable,
-  NotImplementedException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomBytes } from 'crypto';
-import { Observable } from 'rxjs';
 import { UsersService } from '../users/users.service';
 
 class UserRefreshToken {
@@ -20,10 +15,8 @@ class UserRefreshToken {
 
 @Injectable()
 export class AuthService {
-  findAllConnected(): Observable<User[]> {
-    return;
-  }
-  // refreshTokens = new Map<string, User>();
+  private readonly logger = new Logger(AuthService.name);
+
   refreshTokens: UserRefreshToken[] = [];
 
   constructor(
@@ -44,7 +37,7 @@ export class AuthService {
 
     this.jwtService.sign(user);
 
-    return null;
+    return user;
   }
 
   async login(user: User) {
@@ -84,9 +77,8 @@ export class AuthService {
   }
 
   refreshToken(refreshToken: string) {
-    console.log('tokens:', this.refreshTokens);
     if (this.hasRT(refreshToken)) {
-      console.log('refreshToken trouvé, clenauing up')
+      console.log('refreshToken trouvé, clenauing up');
       const userRefreshToken = this.refreshTokens.find(
         (x: UserRefreshToken) => x.refreshToken === refreshToken,
       );

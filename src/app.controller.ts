@@ -1,8 +1,17 @@
-import { Body, Controller, Get, Logger, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Logger,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 // import { LoginGuard } from 'auth/guard/login.guard';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
+import { interval, Observable, of } from 'rxjs';
 // import { AuthenticatedGuard } from 'auth/guard/auth.guard';
 
 interface RefreshToken {
@@ -28,6 +37,12 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @Get('obs')
+  getInterval() {
+    console.log('backend obs called')
+    return 'alex';
+  }
+
   @Get('ping')
   ping(@Request() req): string {
     console.log('ping');
@@ -50,7 +65,7 @@ export class AppController {
 
   @Post('/auth/refreshToken')
   async refreshToken(@Body() refreshToken: RefreshToken): Promise<any> {
-    this.logger.log('endpoint refreshToken',refreshToken.refreshToken)
+    this.logger.log('endpoint refreshToken', refreshToken.refreshToken);
     return this.authService.refreshToken(refreshToken.refreshToken);
   }
 

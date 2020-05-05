@@ -15,13 +15,13 @@ async function bootstrap() {
 
   app.use(
     session({
+      // store: sessionStore,
       secret: 'nest cats',
       resave: false,
       saveUninitialized: false,
     }),
   );
   app.use(passport.initialize());
-  app.use(passport.session());
 
   await app.listen(PORT);
   console.log(`Application is running on: ${await app.getUrl()}`);
