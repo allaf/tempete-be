@@ -1,3 +1,5 @@
+import { Game, GameStatus } from 'model/game.model';
+
 interface db {
   gameId: number;
   userId: number;
@@ -5,46 +7,31 @@ interface db {
   users: User[];
 }
 
+let phil: User = {
+  userId: '1',
+  username: 'phil',
+  password: 'phil',
+};
+
 export const db = {
-  gameId: 0,
+  gameId: 1,
   games: [
-    // {
-    //   name: 'partie de alex',
-    //   id: '45',
-    //   createdBy: '0',
-    //   boardFen: 'start',
-    // },
-    // {
-    //   name: 'partie de phil',
-    //   id: '15',
-    //   createdBy: '1',
-    //   boardFen:
-    //     'r3kb1r/ppp2p1p/2p2np1/4p3/3qP3/5Q1P/PPPP1P1P/RNB1K2R w KQkq - 1 8',
-    // },
+    {
+      status: GameStatus.OPEN,
+      name: 'partie de phil (0)',
+      id: '0',
+      boardFen: 'start',
+      createdBy: phil,
+      whitePlayer: phil,
+    },
   ],
 
   users: [
     {
-      id: '0',
       userId: '0',
       username: 'alex',
       password: 'alex',
     },
-    {
-      id: '1',
-      userId: '0',
-      username: 'phil',
-      password: 'phil',
-    },
-    {
-      id: '2',
-      username: 'chris',
-      password: 'secret',
-    },
-    {
-      id: '3',
-      username: 'maria',
-      password: 'guess',
-    },
+    phil,
   ],
 };

@@ -53,7 +53,6 @@ export class AppController {
   @Post('auth/login')
   async login(@Request() req) {
     let res = this.authService.login(req.user);
-    console.log(req.sessionStore.sessions);
     return res;
   }
 

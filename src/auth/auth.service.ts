@@ -41,7 +41,6 @@ export class AuthService {
   }
 
   async login(user: User) {
-    //TODO enlever les anciens token du même user
     const token = this.jwtService.sign(user);
     const refreshToken = randomBytes(64).toString('hex');
     const resp = {
@@ -49,17 +48,24 @@ export class AuthService {
       ...{ accessToken: token, refreshToken },
     };
 
-    this.refreshTokens = this.refreshTokens.filter(x => x.user.id !== user.id);
+    this.removeUserToken(user);
+
     this.refreshTokens.push(new UserRefreshToken(user, refreshToken));
 
     return resp;
+  }
+
+  private removeUserToken(userId) {
+    this.refreshTokens = this.refreshTokens.filter(
+      x => x.user.userId !== userId,
+    );
   }
 
   logout(refreshToken: string, userId?: string) {
     if (this.hasRT(refreshToken)) {
       this.removeRT(refreshToken);
     } else {
-      console.log('pas trouvé son refreshToken');
+      this.logger.debug('pas trouvé son refreshToken');
     }
   }
 

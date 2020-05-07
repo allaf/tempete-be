@@ -4,18 +4,19 @@ import * as passport from 'passport';
 import { interval } from 'rxjs';
 import { take, tap } from 'rxjs/operators';
 import { AppModule } from './app.module';
+import { Put } from '@nestjs/common';
 
 const PORT = 3000;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['log'],
+    logger: ['log', 'debug'],
   });
-  app.enableCors();
-
+  app.enableCors({
+    // methods:['GET','PUT','POST','OPTION', 'DELETE']
+  });
   app.use(
     session({
-      // store: sessionStore,
       secret: 'nest cats',
       resave: false,
       saveUninitialized: false,

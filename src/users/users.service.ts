@@ -3,7 +3,7 @@ import { db } from 'data';
 
 @Injectable()
 export class UsersService {
-  async findOne(username: string): Promise<User | undefined> {
+  async findOne(username: string): Promise<User> {
     return db.users.find(user => user.username === username);
   }
 
@@ -11,12 +11,7 @@ export class UsersService {
     return db.users;
   }
 
-  async findById(id: string): Promise<User> {
-    const x = db.users.filter(u => u.id === '0');
-    console.log(db.users, x);
-    console.log(db.users.filter(u => u.id === id)[0]);
-    console.log(id);
-
-    return db.users.filter(u => u.id === id)[0];
+  findById(id: string): User {
+    return db.users.find(u => u.userId === id);
   }
 }
