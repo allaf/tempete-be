@@ -1,38 +1,62 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  Logger,
   Param,
   Post,
-  Request,
-  UseGuards,
-  Body,
-  Logger,
   Put,
-  Delete,
-  NotImplementedException,
+  Request,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { db } from 'data';
-import { Game, GameStatus } from 'model/game.model';
-import { Observable, of } from 'rxjs';
-import { UsersService } from 'users/users.service';
-import { GameService } from './game.service';
-import { globalAgent } from 'http';
 import { DataService } from 'data-service/data.service';
+import { Game, GameStatus, PositionChange, GameUpdate } from 'model/game.model';
+import { Observable, of } from 'rxjs';
+import { filter, tap } from 'rxjs/operators';
+import { UserService } from 'users/user.service';
+import { WSGateway } from 'ws/ws.gateway';
+import { GameService } from './game.service';
+import { Chess } from 'chess.js';
 
 @Controller('game')
 @UseGuards(AuthGuard('jwt'))
 export class GameController {
   private readonly logger = new Logger(GameController.name);
 
-  boardStat = '';
+  posChangeObs: Observable<any>;
 
   constructor(
-    private dataservice: DataService,
-    private userService: UsersService,
+    private dataService: DataService,
+    private userService: UserService,
     private gameService: GameService,
-  ) {}
+    private wsg: WSGateway,
+  ) {
+    this.gameService.findById('0');
+    this.posChangeObs = this.wsg.getGameChange();
+    this.posChangeObs
+      .pipe(
+        filter(x => x),
+        tap(x => this.traiterGameChange(x)),
+      )
+      .subscribe();
+    // TODO new Chess();
+    // const chess = new Chess();
+    // console.log(chess.turn());
+    // chess.move('e4');
+    // console.log(chess.turn());
+  }
+
+  private traiterGameChange(game: Game) {
+    // update game in db (clients will update through the socket directly !)
+    this.gameService.update(game);
+
+    //TODO braodcast change to all clients
+    this.wsg.emit('gameChange', game);
+  }
 
   @Get('list')
   getGames(@Request() req): Observable<Game[]> {
@@ -41,13 +65,11 @@ export class GameController {
 
   @Get(':id')
   findOne(@Param() params): Game {
-    db.games.find(g => g.id === params.id);
-    return db.games.find(g => g.id === params.id);
+    return this.gameService.findById(params.id);
   }
 
   @Put(':id/join')
   joinpost(@Body() Body, @Request() req, @Param() params): Game {
-    this.logger.debug('join appelé');
     const user = this.userService.findById(req.user.userId);
     const game = this.gameService.findById(params.id);
     game.blackPlayer = user;
@@ -58,12 +80,10 @@ export class GameController {
 
   @Delete(':id')
   delete(@Body() Body, @Request() req, @Param() params) {
-    this.logger.debug('delete appelé');
     const user = this.userService.findById(req.user.userId);
     const game = this.gameService.findById(params.id);
 
-    // TODO service
-
+    // TODO in gamService
     // TODO game not found, user not found 404
     if (game.createdBy.userId !== user.userId)
       throw new UnauthorizedException('not your game');
@@ -71,20 +91,17 @@ export class GameController {
     if (game.status !== GameStatus.OPEN)
       throw new UnauthorizedException('status not OPEN');
 
-    this.dataservice.deleteGame(game.id);
+    this.dataService.deleteGame(game.id);
   }
 
   @Post()
   async create(@Request() req) {
     const user: User = await this.userService.findById(req.user.userId);
-    let game: Game = {
-      status: GameStatus.OPEN,
-      name: 'partie de ' + req.user.username + ' (' + db.gameId + ')',
-      id: '' + db.gameId++,
-      boardFen: 'start',
-      createdBy: user,
-      whitePlayer: user,
-    };
+    const game = new Game(
+      '' + db.gameId++,
+      'partie de ' + req.user.username + ' (' + db.gameId + ')',
+      user,
+    );
     db.games.push(game);
 
     return game;

@@ -1,7 +1,7 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomBytes } from 'crypto';
-import { UsersService } from '../users/users.service';
+import { UserService } from '../users/user.service';
 
 class UserRefreshToken {
   user: User;
@@ -20,7 +20,7 @@ export class AuthService {
   refreshTokens: UserRefreshToken[] = [];
 
   constructor(
-    private usersService: UsersService,
+    private usersService: UserService,
     private jwtService: JwtService,
   ) {}
 
@@ -84,13 +84,11 @@ export class AuthService {
 
   refreshToken(refreshToken: string) {
     if (this.hasRT(refreshToken)) {
-      console.log('refreshToken trouvé, clenauing up');
       const userRefreshToken = this.refreshTokens.find(
         (x: UserRefreshToken) => x.refreshToken === refreshToken,
       );
       return { jwtToken: this.jwtService.sign(userRefreshToken.user) };
     } else {
-      console.log('401 car refreshToken non trouvé sur le serveur');
       throw new UnauthorizedException();
     }
   }

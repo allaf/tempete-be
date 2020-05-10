@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { db } from 'data';
 import { Game } from 'model/game.model';
 
@@ -10,5 +10,14 @@ export class GameService {
 
   findById(id: string): Game {
     return db.games.find(g => g.id === id);
+  }
+
+  update(game: Game): Game {
+    let idx = db.games.findIndex(g => g.id === game.id);
+    if (idx === -1) {
+      throw new NotFoundException('Game not found');
+    }
+    db.games[idx] = game;
+    return db.games[idx];
   }
 }

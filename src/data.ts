@@ -7,31 +7,28 @@ interface db {
   users: User[];
 }
 
-let phil: User = {
+let alex = {
+  userId: '0',
+  username: 'alex',
+  password: 'alex',
+};
+let phil = {
   userId: '1',
   username: 'phil',
   password: 'phil',
 };
+let toto = {
+  userId: '2',
+  username: 'toto',
+  password: 'toto',
+};
 
 export const db = {
-  gameId: 1,
+  gameId: 2,
   games: [
-    {
-      status: GameStatus.OPEN,
-      name: 'partie de phil (0)',
-      id: '0',
-      boardFen: 'start',
-      createdBy: phil,
-      whitePlayer: phil,
-    },
+    new Game('0', 'partie de phil (0)', phil),
+    new Game('1', 'partie de toto (1)', toto),
   ],
 
-  users: [
-    {
-      userId: '0',
-      username: 'alex',
-      password: 'alex',
-    },
-    phil,
-  ],
+  users: [alex, toto, phil],
 };

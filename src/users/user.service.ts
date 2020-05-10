@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { db } from 'data';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   async findOne(username: string): Promise<User> {
     return db.users.find(user => user.username === username);
   }

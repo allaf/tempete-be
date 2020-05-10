@@ -4,7 +4,9 @@ import * as passport from 'passport';
 import { interval } from 'rxjs';
 import { take, tap } from 'rxjs/operators';
 import { AppModule } from './app.module';
-import { Put } from '@nestjs/common';
+import { Chess } from 'chess.js';
+
+
 
 const PORT = 3000;
 
@@ -12,9 +14,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['log', 'debug'],
   });
-  app.enableCors({
-    // methods:['GET','PUT','POST','OPTION', 'DELETE']
-  });
+  app.enableCors({});
   app.use(
     session({
       secret: 'nest cats',
@@ -29,6 +29,7 @@ async function bootstrap() {
   sandbox();
 }
 bootstrap();
+
 
 async function sandbox() {
   console.log('**** sandbox ****');
