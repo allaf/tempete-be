@@ -1,10 +1,18 @@
-import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import {
+  MessageBody,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Game } from 'model/game.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Server } from 'ws';
+import { Logger } from '@nestjs/common';
 
 @WebSocketGateway()
 export class WSGateway {
+  private readonly logger = new Logger(WSGateway.name);
+
   gameChangeSubject = new BehaviorSubject<Game>(null);
 
   @WebSocketServer()
@@ -20,7 +28,7 @@ export class WSGateway {
 
   @SubscribeMessage('gameChange')
   game(@MessageBody() data: any) {
-    console.log("gameChange channel a reçu qqchose")
+    console.log('gameChange channel');
     this.gameChangeSubject.next(data);
   }
 
@@ -29,11 +37,11 @@ export class WSGateway {
   }
 
   handleConnection(socket: SocketIO.Socket) {
-    console.log('client', socket.client.id, 'disconnected');
+    this.logger.verbose('client'+ socket.client.id+ 'connected');
   }
 
   handleDisconnect(socket: SocketIO.Socket) {
-    console.log('client', socket.client.id, 'disconnected');
+    this.logger.verbose('client'+ socket.client.id+ 'disconnected');
   }
 
   test() {
