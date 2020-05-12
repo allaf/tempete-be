@@ -7,6 +7,11 @@ export enum GameStatus {
   FINISHED = 'FINISHED',
 }
 
+// export class Player {
+//   id: string;
+//   name:string;
+// }
+
 export class Game {
   id: string;
   turn = Turn.W;
@@ -29,7 +34,6 @@ export class Game {
   changeTurn() {
     this.turn = this.turn === Turn.W ? Turn.B : Turn.W;
   }
-
 }
 
 export enum Turn {

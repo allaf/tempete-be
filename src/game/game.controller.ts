@@ -1,28 +1,13 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Logger,
-  Param,
-  Post,
-  Put,
-  Request,
-  UnauthorizedException,
-  UseGuards,
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, NotFoundException, Param, Post, Put, Request, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { db } from 'data';
 import { DataService } from 'data-service/data.service';
-import { Game, GameStatus, PositionChange, GameUpdate } from 'model/game.model';
+import { Game, GameStatus } from 'model/game.model';
 import { Observable, of } from 'rxjs';
 import { filter, tap } from 'rxjs/operators';
 import { UserService } from 'users/user.service';
 import { WSGateway } from 'ws/ws.gateway';
 import { GameService } from './game.service';
-import { Chess } from 'chess.js';
 
 @Controller('game')
 @UseGuards(AuthGuard('jwt'))
@@ -45,18 +30,13 @@ export class GameController {
         tap(x => this.traiterGameChange(x)),
       )
       .subscribe();
-    // TODO new Chess();
-    // const chess = new Chess();
-    // console.log(chess.turn());
-    // chess.move('e4');
-    // console.log(chess.turn());
   }
 
   private traiterGameChange(game: Game) {
     // update game in db (clients will update through the socket directly !)
     this.gameService.update(game);
 
-    //TODO braodcast change to all clients
+    // braodcast change to all clients
     this.wsg.emit('gameChange', game);
   }
 
@@ -89,8 +69,13 @@ export class GameController {
     const user = this.userService.findById(req.user.userId);
     const game = this.gameService.findById(params.id);
 
-    // TODO in gamService
-    // TODO game not found, user not found 404
+    if (!!user) {
+      throw new NotFoundException('user not found');
+    }
+    if (!!game) {
+      throw new NotFoundException('game not found');
+    }
+
     if (game.createdBy.userId !== user.userId)
       throw new UnauthorizedException('not your game');
 

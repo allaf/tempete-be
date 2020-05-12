@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { db } from 'data';
+import { of } from 'rxjs';
 
 @Injectable()
 export class UserService {
