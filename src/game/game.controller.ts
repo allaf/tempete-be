@@ -10,6 +10,8 @@ import {
   Request,
   UnauthorizedException,
   UseGuards,
+  BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { db } from 'data';
@@ -65,7 +67,11 @@ export class GameController {
 
   @Get(':id')
   findOne(@Param() params): Game {
-    return this.gameService.findById(params.id);
+    let game = this.gameService.findById(params.id);
+    if (!game) {
+      throw new NotFoundException();
+    }
+    return game;
   }
 
   @Put(':id/join')

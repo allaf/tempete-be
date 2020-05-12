@@ -19,7 +19,7 @@ export class Game {
   blackPlayer?: User;
   position = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
-  constructor(id, name, createdBy) {
+  constructor(id?, name?, createdBy?) {
     this.id = id;
     this.name = name;
     this.createdBy = createdBy;
@@ -29,6 +29,7 @@ export class Game {
   changeTurn() {
     this.turn = this.turn === Turn.W ? Turn.B : Turn.W;
   }
+
 }
 
 export enum Turn {
@@ -44,4 +45,10 @@ export interface PositionChange {
 export interface GameUpdate {
   gameId: string;
   position: string;
+}
+
+export interface MoveMade {
+  source;
+  target;
+  newPos;
 }
