@@ -4,13 +4,9 @@ export enum GameStatus {
   OPEN = 'OPEN',
   PAIRED = 'PAIRED',
   STARTED = 'STARTED',
-  FINISHED = 'FINISHED',
+  FINISHED_MATE = 'FINISHED_MATE',
+  FINISHED_RESIGN = 'FINISHED_RESIGN',
 }
-
-// export class Player {
-//   id: string;
-//   name:string;
-// }
 
 export class Game {
   id: string;
@@ -24,11 +20,12 @@ export class Game {
   blackPlayer?: User;
   position = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
-  constructor(id?, name?, createdBy?) {
+  constructor(id?, name?, createdBy?, position?) {
     this.id = id;
     this.name = name;
     this.createdBy = createdBy;
     this.whitePlayer = createdBy;
+    this.position = position
   }
 
   changeTurn() {

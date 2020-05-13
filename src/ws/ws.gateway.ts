@@ -18,8 +18,6 @@ export class WSGateway {
   @WebSocketServer()
   private server: Server;
 
-  // usersWS = new Map<string, Set<string>>(); //map userId=>[socketid]
-
   constructor() {}
 
   emit(channel, msg) {
@@ -28,7 +26,6 @@ export class WSGateway {
 
   @SubscribeMessage('gameChange')
   game(@MessageBody() data: any) {
-    console.log('gameChange channel');
     this.gameChangeSubject.next(data);
   }
 
@@ -44,12 +41,4 @@ export class WSGateway {
     this.logger.verbose('client'+ socket.client.id+ 'disconnected');
   }
 
-  test() {
-    console.log('gateway test called');
-  }
-  // socketio
-  // @SubscribeMessage('game/:id')
-  // toto(@MessageBody() data: any, @Param() params) {
-  // console.log('GAMEID : ', data, params);
-  // }
 }

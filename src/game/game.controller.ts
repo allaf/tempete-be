@@ -1,10 +1,11 @@
 import { Body, Controller, Delete, Get, Logger, NotFoundException, Param, Post, Put, Request, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Chess } from 'chess.js';
 import { db } from 'data';
 import { DataService } from 'data-service/data.service';
 import { Game, GameStatus } from 'model/game.model';
 import { Observable, of } from 'rxjs';
-import { filter, tap } from 'rxjs/operators';
+import { filter, map, tap } from 'rxjs/operators';
 import { UserService } from 'users/user.service';
 import { WSGateway } from 'ws/ws.gateway';
 import { GameService } from './game.service';
@@ -13,7 +14,7 @@ import { GameService } from './game.service';
 @UseGuards(AuthGuard('jwt'))
 export class GameController {
   private readonly logger = new Logger(GameController.name);
-
+  private mapAsGame = map(res => Object.assign(new Game(), res as Game));
   posChangeObs: Observable<any>;
 
   constructor(
@@ -22,19 +23,24 @@ export class GameController {
     private gameService: GameService,
     private wsg: WSGateway,
   ) {
-    this.gameService.findById('0');
     this.posChangeObs = this.wsg.getGameChange();
     this.posChangeObs
       .pipe(
         filter(x => x),
-        tap(x => this.traiterGameChange(x)),
+        this.mapAsGame,
+        tap(x => this.handleGameChange(x)),
       )
       .subscribe();
   }
 
-  private traiterGameChange(game: Game) {
+  private handleGameChange(game: Game) {
+    let fen = game.position + ' ' + game.turn + ' KQkq - 0 1'; //+game.moveCount;
+    if (new Chess(fen).in_checkmate()) {
+      game.status = GameStatus.FINISHED_MATE;
+    }
+
     // update game in db (clients will update through the socket directly !)
-    this.gameService.update(game);
+    game = this.gameService.update(game);
 
     // braodcast change to all clients
     this.wsg.emit('gameChange', game);
