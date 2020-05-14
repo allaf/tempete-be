@@ -1,4 +1,5 @@
 import { User } from './user.model';
+import { Move } from 'chess.js';
 
 export enum GameStatus {
   OPEN = 'OPEN',
@@ -19,13 +20,14 @@ export class Game {
   whitePlayer: User;
   blackPlayer?: User;
   position = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+  lastMove: SquareMove;
 
   constructor(id?, name?, createdBy?, position?) {
     this.id = id;
     this.name = name;
     this.createdBy = createdBy;
     this.whitePlayer = createdBy;
-    this.position = position
+    this.position = position;
   }
 
   changeTurn() {
@@ -49,7 +51,12 @@ export interface GameUpdate {
 }
 
 export interface MoveMade {
-  source;
-  target;
-  newPos;
+  source: string;
+  target: string;
+  newPos: string;
+}
+
+export interface SquareMove {
+  source: string;
+  target: string;
 }

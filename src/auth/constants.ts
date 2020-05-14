@@ -1,4 +1,4 @@
 export const jwtConstants = {
   secret: 'someSecretKey',
-  tokenExpires: '6000s', 
+  tokenExpires: '10000s', 
 };

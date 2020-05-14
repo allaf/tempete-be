@@ -39,7 +39,7 @@ export class GameController {
       game.status = GameStatus.FINISHED_MATE;
     }
 
-    // update game in db (clients will update through the socket directly !)
+    // update game in db
     game = this.gameService.update(game);
 
     // braodcast change to all clients
