@@ -18,8 +18,6 @@ export class WSGateway {
   @WebSocketServer()
   private server: Server;
 
-  constructor() {}
-
   emit(channel, msg) {
     this.server.emit(channel, msg);
   }
@@ -34,11 +32,11 @@ export class WSGateway {
   }
 
   handleConnection(socket: SocketIO.Socket) {
-    this.logger.verbose('client'+ socket.client.id+ 'connected');
+    this.logger.verbose('client' + socket.client.id + 'connected');
   }
 
   handleDisconnect(socket: SocketIO.Socket) {
-    this.logger.verbose('client'+ socket.client.id+ 'disconnected');
+    this.logger.verbose('client' + socket.client.id + 'disconnected');
   }
 
 }

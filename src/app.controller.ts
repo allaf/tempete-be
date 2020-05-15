@@ -8,11 +8,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-// import { LoginGuard } from 'auth/guard/login.guard';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
-import { interval, Observable, of } from 'rxjs';
-// import { AuthenticatedGuard } from 'auth/guard/auth.guard';
 
 interface RefreshToken {
   refreshToken: string;
@@ -39,12 +36,11 @@ export class AppController {
 
   @Get('obs')
   getInterval() {
-    console.log('backend obs called')
     return 'alex';
   }
 
   @Get('ping')
-  ping(@Request() req): string {
+  ping(): string {
     console.log('ping');
     return '{"ping":"pong"}';
   }
@@ -52,13 +48,13 @@ export class AppController {
   @UseGuards(AuthGuard('local'))
   @Post('auth/login')
   async login(@Request() req) {
-    let res = this.authService.login(req.user);
+    const res = this.authService.login(req.user);
     return res;
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Post('auth/logout')
-  async logout(@Body() body, @Request() req) {
+  async logout(@Body() body, ) {
     return this.authService.logout(body.refreshToken);
   }
 
@@ -70,7 +66,7 @@ export class AppController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('protected')
-  getProtected(@Request() req) {
+  getProtected() {
     return 'should be protected';
   }
 }

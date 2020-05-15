@@ -1,6 +1,6 @@
-import { Controller, Get, Param, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { AuthService } from 'auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
 
 @Controller('users')
@@ -17,7 +17,7 @@ export class UsersController {
   }
 
   @Get('connected')
-  getConnectedUsers(@Request() req) {
+  getConnectedUsers() {
     return this.auth.loggedInUsers();
   }
 

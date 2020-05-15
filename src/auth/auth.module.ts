@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
+import { PassportModule, AuthModuleOptions } from '@nestjs/passport';
 import { UsersModule } from '../users/users.module';
 import { AuthService } from './auth.service';
 import { jwtConstants } from './constants';
-// import { SessionSerializer } from './session.serializer';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 
@@ -18,6 +17,6 @@ import { LocalStrategy } from './strategy/local.strategy';
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy/*, SessionSerializer*/],
-  exports: [AuthService],
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

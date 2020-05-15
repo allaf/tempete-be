@@ -1,5 +1,33 @@
 import { User } from './user.model';
 
+
+export enum Turn {
+  W = 'w',
+  B = 'b',
+}
+
+export interface PositionChange {
+  gameId: string;
+  player: string;
+  newPos: string;
+}
+
+export interface GameUpdate {
+  gameId: string;
+  position: string;
+}
+
+export interface MoveMade {
+  source: string;
+  target: string;
+  newPos: string;
+}
+
+export interface SquareMove {
+  source: string;
+  target: string;
+}
+
 export enum GameStatus {
   OPEN = 'OPEN',
   PAIRED = 'PAIRED',
@@ -37,31 +65,4 @@ export class Game {
   changeTurn() {
     this.turn = this.turn === Turn.W ? Turn.B : Turn.W;
   }
-}
-
-export enum Turn {
-  W = 'w',
-  B = 'b',
-}
-
-export interface PositionChange {
-  gameId: string;
-  player: string;
-  newPos: string;
-}
-
-export interface GameUpdate {
-  gameId: string;
-  position: string;
-}
-
-export interface MoveMade {
-  source: string;
-  target: string;
-  newPos: string;
-}
-
-export interface SquareMove {
-  source: string;
-  target: string;
 }

@@ -1,14 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import * as session from 'express-session';
 import * as passport from 'passport';
-import { interval } from 'rxjs';
-import { take, tap } from 'rxjs/operators';
 import { AppModule } from './app.module';
-import { Chess } from 'chess.js';
-
-
 
 const PORT = 3000;
+
+async function sandbox() {
+  console.log('**** sandbox ****');
+  console.log('**** sandbox ****');
+}
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -29,15 +29,3 @@ async function bootstrap() {
   sandbox();
 }
 bootstrap();
-
-
-async function sandbox() {
-  console.log('**** sandbox ****');
-  console.log('**** sandbox ****');
-}
-
-async function f() {
-  return await interval(1)
-    .pipe(take(3), tap(console.log))
-    .toPromise();
-}

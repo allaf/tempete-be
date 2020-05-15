@@ -28,9 +28,29 @@ export class AuthService {
     return this.refreshTokens.map((x: UserRefreshToken) => x.user);
   }
 
+  logout(refreshToken: string) {
+    if (this.hasRT(refreshToken)) {
+      this.removeRT(refreshToken);
+    } else {
+      this.logger.debug('pas trouvé son refreshToken');
+    }
+  }
+
+  refreshToken(refreshToken: string) {
+    if (this.hasRT(refreshToken)) {
+      const userRefreshToken = this.refreshTokens.find(
+        (x: UserRefreshToken) => x.refreshToken === refreshToken,
+      );
+      return { jwtToken: this.jwtService.sign(userRefreshToken.user) };
+    } else {
+      throw new UnauthorizedException();
+    }
+  }
+
   async validateUser(username: string, pass: string): Promise<User> {
     const user = await this.usersService.findOne(username);
     if (user && user.password === pass) {
+      // tslint:disable-next-line: no-unused-vars
       const { password, ...result } = user;
       return result;
     }
@@ -61,14 +81,6 @@ export class AuthService {
     );
   }
 
-  logout(refreshToken: string, userId?: string) {
-    if (this.hasRT(refreshToken)) {
-      this.removeRT(refreshToken);
-    } else {
-      this.logger.debug('pas trouvé son refreshToken');
-    }
-  }
-
   private hasRT(refreshToken: string) {
     return this.refreshTokens.find(
       (x: UserRefreshToken) => x.refreshToken === refreshToken,
@@ -76,20 +88,9 @@ export class AuthService {
   }
 
   private removeRT(refreshToken: string) {
-    let x = this.refreshTokens.filter(
+    const urt = this.refreshTokens.filter(
       (x: UserRefreshToken) => x.refreshToken !== refreshToken,
     );
-    this.refreshTokens = x;
-  }
-
-  refreshToken(refreshToken: string) {
-    if (this.hasRT(refreshToken)) {
-      const userRefreshToken = this.refreshTokens.find(
-        (x: UserRefreshToken) => x.refreshToken === refreshToken,
-      );
-      return { jwtToken: this.jwtService.sign(userRefreshToken.user) };
-    } else {
-      throw new UnauthorizedException();
-    }
+    this.refreshTokens = urt;
   }
 }

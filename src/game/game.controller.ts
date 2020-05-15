@@ -1,13 +1,26 @@
-import { Body, Controller, Delete, Get, Logger, NotFoundException, Param, Post, Put, Request, UnauthorizedException, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+  Request,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Chess } from 'chess.js';
-import { db } from 'data';
-import { DataService } from 'data-service/data.service';
-import { Game, GameStatus } from 'model/game.model';
+import { db } from '../data';
+import { DataService } from '../data-service/data.service';
+import { Game, GameStatus } from '../model/game.model';
 import { Observable, of } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
-import { UserService } from 'users/user.service';
-import { WSGateway } from 'ws/ws.gateway';
+import { UserService } from '../users/user.service';
+import { WSGateway } from '../ws/ws.gateway';
 import { GameService } from './game.service';
 
 @Controller('game')
@@ -33,27 +46,14 @@ export class GameController {
       .subscribe();
   }
 
-  private handleGameChange(game: Game) {
-    let fen = game.position + ' ' + game.turn + ' KQkq - 0 1'; //+game.moveCount;
-    if (new Chess(fen).in_checkmate()) {
-      game.status = GameStatus.FINISHED_MATE;
-    }
-
-    // update game in db
-    game = this.gameService.update(game);
-
-    // braodcast change to all clients
-    this.wsg.emit('gameChange', game);
-  }
-
   @Get('list')
-  getGames(@Request() req): Observable<Game[]> {
+  getGames(): Observable<Game[]> {
     return of(db.games);
   }
 
   @Get(':id')
   findOne(@Param() params): Game {
-    let game = this.gameService.findById(params.id);
+    const game = this.gameService.findById(params.id);
     if (!game) {
       throw new NotFoundException();
     }
@@ -61,7 +61,7 @@ export class GameController {
   }
 
   @Put(':id/join')
-  joinpost(@Body() Body, @Request() req, @Param() params): Game {
+  joinpost(@Body() body, @Request() req, @Param() params): Game {
     const user = this.userService.findById(req.user.userId);
     const game = this.gameService.findById(params.id);
     game.blackPlayer = user;
@@ -71,7 +71,7 @@ export class GameController {
   }
 
   @Delete(':id')
-  delete(@Body() Body, @Request() req, @Param() params) {
+  delete(@Body() body, @Request() req, @Param() params) {
     const user = this.userService.findById(req.user.userId);
     const game = this.gameService.findById(params.id);
 
@@ -82,11 +82,13 @@ export class GameController {
       throw new NotFoundException('game not found');
     }
 
-    if (game.createdBy.userId !== user.userId)
+    if (game.createdBy.userId !== user.userId) {
       throw new UnauthorizedException('not your game');
+    }
 
-    if (game.status !== GameStatus.OPEN)
+    if (game.status !== GameStatus.OPEN) {
       throw new UnauthorizedException('status not OPEN');
+    }
 
     this.dataService.deleteGame(game.id);
   }
@@ -102,5 +104,18 @@ export class GameController {
     db.games.push(game);
 
     return game;
+  }
+
+  private handleGameChange(game: Game) {
+    const fen = game.position + ' ' + game.turn + ' KQkq - 0 1'; // TODO create full correct fen;
+    if (new Chess(fen).in_checkmate()) {
+      game.status = GameStatus.FINISHED_MATE;
+    }
+
+    // update game in db
+    game = this.gameService.update(game);
+
+    // braodcast change to all clients
+    this.wsg.emit('gameChange', game);
   }
 }
