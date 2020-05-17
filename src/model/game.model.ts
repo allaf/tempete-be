@@ -2,8 +2,8 @@ import { User } from './user.model';
 
 
 export enum Turn {
-  W = 'w',
-  B = 'b',
+  WHITE = 'w',
+  BLACK = 'b',
 }
 
 export interface PositionChange {
@@ -38,7 +38,7 @@ export enum GameStatus {
 
 export class Game {
   id: string;
-  turn = Turn.W;
+  turn = Turn.WHITE;
   fenPointer = 0;
   status = GameStatus.OPEN;
   name: string;
@@ -63,6 +63,6 @@ export class Game {
   }
 
   changeTurn() {
-    this.turn = this.turn === Turn.W ? Turn.B : Turn.W;
+    this.turn = this.turn === Turn.WHITE ? Turn.BLACK : Turn.WHITE;
   }
 }

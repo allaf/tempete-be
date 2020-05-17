@@ -1,4 +1,4 @@
-import { Game } from './model/game.model';
+import { Game, Turn } from './model/game.model';
 
 interface Db {
   gameId: number;
@@ -22,9 +22,11 @@ const toto = {
   password: 'toto',
 };
 
+
+
+
 function createScholarMateGame() {
   const g = new Game('0', 'partie de phil (0)', phil);
-  g.position = 'r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR';
   g.fenHistory = [
     'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
     'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1',
@@ -33,7 +35,10 @@ function createScholarMateGame() {
     'r1bqkbnr/pppp1ppp/2n5/4p2Q/4P3/8/PPPP1PPP/RNB1KBNR w KQkq - 2 3',
     'r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3',
   ];
+  
   g.fenPointer = g.fenHistory.length - 1;
+  g.position = g.fenHistory[g.fenPointer];
+  g.turn = Turn.BLACK;
 
   g.moveHistory = [
     { source: 'e2', target: 'e4' }, // w
@@ -49,7 +54,12 @@ function createScholarMateGame() {
 
 export const db: Db = {
   gameId: 2,
-  games: [createScholarMateGame(), new Game('1', 'partie de toto (1)', toto)],
+  games: [
+    createScholarMateGame(),
+    new Game('1', '1 partie de toto', toto),
+    new Game('2', '2 partie de alex', alex),
+    new Game('3', '3 partie de alex', alex, 'r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 1'),
+  ],
 
   users: [alex, toto, phil],
 };
