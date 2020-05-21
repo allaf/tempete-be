@@ -35,7 +35,7 @@ function createScholarMateGame() {
     'r1bqkbnr/pppp1ppp/2n5/4p2Q/4P3/8/PPPP1PPP/RNB1KBNR w KQkq - 2 3',
     'r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3',
   ];
-  
+
   g.fenPointer = g.fenHistory.length - 1;
   g.position = g.fenHistory[g.fenPointer];
   g.turn = Turn.BLACK;
