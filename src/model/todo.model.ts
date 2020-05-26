@@ -4,7 +4,9 @@ export enum TodoCat {
 }
 
 export class TodoDto {
-  id: number;
-  completed: string;
+  id: string;
+  // tslint:disable-next-line: variable-name
+  _id: string;
+  completed: boolean;
   todo: string;
 }

@@ -94,12 +94,13 @@ export class GameController {
   }
 
   @Post()
-  async create(@Request() req) {
+  async create(@Request() req, @Body() body) {
     const user: User = await this.userService.findById(req.user.userId);
     const game = new Game(
       '' + db.gameId++,
       'partie de ' + req.user.username + ' (' + db.gameId + ')',
       user,
+      body.variant,
     );
     db.games.push(game);
 
